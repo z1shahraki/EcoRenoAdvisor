@@ -1,0 +1,23 @@
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.24.0
+pyarrow>=10.0.0
+
+# PDF processing
+pypdf>=3.17.0
+
+# Embeddings and vector DB
+sentence-transformers>=2.2.0
+qdrant-client>=1.7.0
+
+# LLM integration
+llama-cpp-python>=0.2.0
+requests>=2.31.0
+
+# UI
+gradio>=4.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+pathlib2>=2.3.7; python_version < '3.4'
+

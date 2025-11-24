@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Data
+data/clean/
+data/raw/
+*.parquet
+*.jsonl
+
+# Models
+models/*.gguf
+models/*.bin
+models/*.safetensors
+models/bge-small-en-v1.5/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+qdrant_storage/
+
+# Gradio
+flagged/
+
+# Images (keep ssty_01.jpg for UI, ignore others)
+images/*
+!images/ssty_01.jpg
+
