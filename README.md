@@ -1,18 +1,31 @@
 # EcoRenoAdvisor
 
-A local RAG + agent system for personalized, eco-friendly renovation decisions. Combines materials filtering, document retrieval, and local LLM to provide document-grounded renovation advice.
+EcoRenoAdvisor is a local renovation advisor that combines document grounded reasoning, materials filtering, and a lightweight local LLM. It answers renovation questions with evidence taken from your documents and material database. The goal is to test feasibility of a private, offline assistant that supports sustainable renovation planning.
 
-## What This Project Demonstrates
+## Why This Project Exists
 
-- **Local LLM Integration**: Direct llama_cpp usage (Qwen2.5 3B) with fallback server mode
-- **RAG Pipeline**: BGE embeddings (sentence-transformers) + in-memory vector search (Qdrant optional)
-- **Agent Pattern**: Combines structured filtering (pandas) with semantic search
-- **Testing**: Pytest-based unit and integration tests
-- **Clean Architecture**: WSL-compatible, uses uv package manager
+Many homeowners want renovation guidance that is personalised, environmentally aware, and grounded in real information rather than generic suggestions. Most tools online are commercial, limited, or require cloud access. EcoRenoAdvisor explores whether a small local LLM, combined with a simple RAG pipeline, can:
+
+- read and understand renovation documents
+- filter materials by sustainability indicators
+- combine both to produce safe and useful recommendations
+
+This project is a first step toward a private home renovation assistant that runs locally and can be improved over time.
+
+## What the System Demonstrates
+
+- Local LLM integration using llama_cpp and Qwen2.5 3B
+- Semantic search over your documents using BGE embeddings
+- A basic RAG pipeline that does not depend on any external service
+- Material filtering using price, eco score, and VOC levels
+- A small agent that blends structured filters with retrieval
+- A clean, testable architecture that works in WSL
+
+This version focuses on feasibility and clarity rather than performance, which can be improved later.
 
 ## Quick Start
 
-### Step 1: Setup with uv
+### Setup with uv
 
 ```bash
 cd EcoRenoAdvisor
@@ -21,106 +34,109 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-### Step 2: Download Model
+### Download Model
 
-Download `qwen2.5-3b-instruct-q4_k_m.gguf` (2GB) to `models/` directory:
-- https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF
+Place this file in `models/`:
 
-### Step 3: Run UI
+`qwen2.5-3b-instruct-q4_k_m.gguf`
+
+Download link:
+https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF
+
+### Run the UI
 
 ```bash
 export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 .venv/bin/python ui/app.py
 ```
 
-Open browser: **http://localhost:7860**
+Open:
+**http://localhost:7860**
 
-**Note:** Uses direct mode by default - model loads automatically when first used. No separate server needed.
+The model loads automatically when needed. No server required.
 
 ## Testing
 
-### Unit Tests (Fast, No Services)
+### Unit Tests
 
 ```bash
 export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 .venv/bin/pytest tests/ -v -m "not integration"
 ```
 
-**Tests:** Materials filtering, chunking, embeddings, agent wiring, UI construction
+Covers filtering, embeddings, chunking, and agent logic.
 
-### Integration Test (RAG + LLM End-to-End)
+### Integration Test
 
 ```bash
-export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 .venv/bin/pytest tests/test_llm_simple_rag.py -v -s
 ```
 
-**Requires:** Model file in `models/qwen2.5-3b-instruct-q4_k_m.gguf`
-
-This test proves LLM + RAG works end-to-end: embeddings → retrieval → LLM generation.
+Runs full RAG flow with the local model.
 
 ### Demo Script
 
 ```bash
-export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
 .venv/bin/python demo_rag.py
 ```
 
-Shows RAG + LLM flow with human-readable output.
+Shows RAG output in the terminal.
 
-## Architecture
+## Architecture Overview
 
 ```
-data/raw/          → CSV, PDFs
-    ↓
-ingestion/         → Clean, extract, chunk
-    ↓
-data/clean/        → Parquet, JSONL
-    ↓
-rag/               → Embeddings → In-memory vector search (Qdrant optional)
-    ↓
-agent/             → Filter + RAG + LLM
-    ↓
-ui/                → Gradio interface
+data/raw          → PDFs, CSVs
+ingestion         → cleaning and chunking
+data/clean        → parquet and JSONL
+rag               → embeddings and vector search
+agent             → filter + retrieve + LLM reasoning
+ui                → Gradio interface
 ```
 
 ## How It Works
 
-1. **Materials Filtering**: Filters renovation materials by category, price, eco-score, and VOC level using pandas
-2. **Document Retrieval**: Uses BGE embeddings to find relevant document chunks via semantic search
-3. **LLM Generation**: Combines filtered materials + retrieved documents + user query → generates personalized recommendations
-4. **Vector Search**: Works with in-memory search (no Docker needed) or Qdrant for production
+1. Filters materials using price, category, eco score, VOC level
+2. Retrieves relevant document chunks using BGE embeddings
+3. Feeds both into a local Qwen model
+4. Produces grounded renovation advice
+
+Works with in-memory search or Qdrant if needed.
 
 ## Modes
 
-### Direct Mode (Default)
-
-Model loaded directly via llama_cpp - no server needed. Perfect for portfolio demos.
+### Direct mode
 
 ```python
 from agent.agent import RenovationAgent
 agent = RenovationAgent(mode="direct")
 ```
 
-### Server Mode (Optional)
-
-For production/multi-user scenarios:
+### Server mode
 
 ```bash
-.venv/bin/python -m llama_cpp.server --model models/qwen2.5-3b-instruct-q4_k_m.gguf --port 8000
+python -m llama_cpp.server --model models/qwen2.5-3b-instruct-q4_k_m.gguf --port 8000
 ```
 
 ```python
 agent = RenovationAgent(mode="server")
 ```
 
+## Future Enhancements
+
+The current version focuses on feasibility. Next steps that make sense:
+
+- improve retrieval quality
+- add multi document context windows
+- introduce richer material scoring
+- run more efficient models
+- add caching for repeated queries
+
 ## Requirements
 
 - Python 3.10+
-- uv package manager
-- Docker (optional, for Qdrant vector DB)
-- LLM model file in `models/` directory
+- uv
+- LLM model file in `models/`
 
 ## License
 
-Open source - portfolio use.
+Open source for portfolio demonstration.
