@@ -1,5 +1,7 @@
 # EcoRenoAdvisor
 
+![EcoRenoAdvisor](images/ssty_02.jpg)
+
 EcoRenoAdvisor is a local renovation advisor that combines document grounded reasoning, materials filtering, and a lightweight local LLM. It answers renovation questions with evidence taken from your documents and material database. The goal is to test feasibility of a private, offline assistant that supports sustainable renovation planning.
 
 ## Why This Project Exists
@@ -55,6 +57,8 @@ Open:
 
 The model loads automatically when needed. No server required.
 
+**Note:** The system works without Docker. It uses in-memory vector search by default. Docker is only needed if you want to use Qdrant for production-scale deployments.
+
 ## Testing
 
 ### Unit Tests
@@ -100,7 +104,7 @@ ui                → Gradio interface
 3. Feeds both into a local Qwen model
 4. Produces grounded renovation advice
 
-Works with in-memory search or Qdrant if needed.
+**Vector Search:** Works with in-memory search by default (no Docker needed). Qdrant is optional for production deployments.
 
 ## Modes
 
@@ -121,6 +125,18 @@ python -m llama_cpp.server --model models/qwen2.5-3b-instruct-q4_k_m.gguf --port
 agent = RenovationAgent(mode="server")
 ```
 
+## Optional: Docker for Qdrant
+
+Docker is **not required** for basic usage. The system uses in-memory vector search by default.
+
+If you want to use Qdrant for production-scale deployments:
+
+```bash
+docker-compose up -d
+```
+
+This starts Qdrant on port 6333. The system will automatically use Qdrant if available, otherwise falls back to in-memory search.
+
 ## Future Enhancements
 
 The current version focuses on feasibility. Next steps that make sense:
@@ -136,6 +152,7 @@ The current version focuses on feasibility. Next steps that make sense:
 - Python 3.10+
 - uv
 - LLM model file in `models/`
+- Docker (optional, only for Qdrant vector database)
 
 ## License
 

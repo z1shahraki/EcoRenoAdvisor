@@ -46,7 +46,8 @@ qdrant_storage/
 # Gradio
 flagged/
 
-# Images (keep ssty_01.jpg for UI, ignore others)
+# Images (keep ssty_01.jpg for UI and ssty_02.jpg for README, ignore others)
 images/*
 !images/ssty_01.jpg
+!images/ssty_02.jpg
 
